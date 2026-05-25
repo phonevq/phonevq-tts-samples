@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTS Demo — Anonymous Submission</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e2ddd5;
+    --accent: #2a5298;
+    --accent2: #1a3a6e;
+    --text: #1a1814;
+    --muted: #6b6660;
+    --tag-bg: #eef2fa;
+    --tag-text: #2a5298;
+    --play-bg: #2a5298;
+    --play-hover: #1a3a6e;
+    --section-border: #2a5298;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .notice {
+    display: inline-block;
+    margin-top: 1rem;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    padding: 0.35rem 0.9rem;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  nav button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.9rem 2rem;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  nav button.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  nav button:hover:not(.active) {
+    color: var(--text);
+  }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  .section-intro {
+    margin-bottom: 2rem;
+  }
+
+  .section-intro h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+  }
+
+  .section-intro p {
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* Model tabs */
+  .model-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .model-tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.45rem 1.1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .model-tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .model-tab:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .model-panel { display: none; }
+  .model-panel.active { display: block; }
+
+  /* Language blocks */
+  .lang-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .lang-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: #fafaf8;
+  }
+
+  .lang-flag {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .lang-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .lang-script {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .audio-rows {
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .audio-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .sample-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    min-width: 58px;
+    letter-spacing: 0.04em;
+  }
+
+  audio {
+    flex: 1;
+    height: 32px;
+    border-radius: 3px;
+    outline: none;
+  }
+
+  audio::-webkit-media-controls-panel {
+    background: var(--tag-bg);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.5rem; }
+    nav button { padding: 0.8rem 1rem; font-size: 0.8rem; }
+    .audio-row { flex-wrap: wrap; }
+    audio { min-width: 200px; }
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Text-to-Speech — Demo Samples</h1>
+  <p>Audio samples for anonymous review. Two samples per language per model.</p>
+  <span class="notice">ANONYMOUS SUBMISSION</span>
+</header>
+
+<nav>
+  <button class="active" onclick="switchSection('vits', this)">1 · VITS</button>
+  <button onclick="switchSection('matcha', this)">2 · Matcha-TTS</button>
+</nav>
+
+<main>
+
+  <!-- ═══════════════ VITS ═══════════════ -->
+  <div id="vits" class="section-panel active">
+    <div class="section-intro">
+      <h2>VITS</h2>
+      <p>Variational Inference with adversarial learning for end-to-end Text-to-Speech.</p>
+    </div>
+
+    <div class="model-tabs">
+      <button class="model-tab active" onclick="switchModel('vits', 'char', this)">Char</button>
+      <button class="model-tab" onclick="switchModel('vits', 'dac', this)">DAC</button>
+      <button class="model-tab" onclick="switchModel('vits', 'cls', this)">CLS</button>
+    </div>
+
+    <div id="vits-char" class="model-panel active">
+      <!-- Hindi -->
+      <div class="lang-block">
+        <div class="lang-header">
+          <span class="lang-flag">🇮🇳</span>
+          <span class="lang-name">Hindi</span>
+          <span class="lang-script">hi · Devanagari</span>
+        </div>
+        <div class="audio-rows">
+          <div class="audio-row">
+            <span class="sample-label">Sample 1</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+          <div class="audio-row">
+            <span class="sample-label">Sample 2</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+        </div>
+      </div>
+      <!-- Punjabi -->
+      <div class="lang-block">
+        <div class="lang-header">
+          <span class="lang-flag">🇮🇳</span>
+          <span class="lang-name">Punjabi</span>
+          <span class="lang-script">pa · Gurmukhi</span>
+        </div>
+        <div class="audio-rows">
+          <div class="audio-row">
+            <span class="sample-label">Sample 1</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+          <div class="audio-row">
+            <span class="sample-label">Sample 2</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+        </div>
+      </div>
+      <!-- Gujarati -->
+      <div class="lang-block">
+        <div class="lang-header">
+          <span class="lang-flag">🇮🇳</span>
+          <span class="lang-name">Gujarati</span>
+          <span class="lang-script">gu · Gujarati</span>
+        </div>
+        <div class="audio-rows">
+          <div class="audio-row">
+            <span class="sample-label">Sample 1</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+          <div class="audio-row">
+            <span class="sample-label">Sample 2</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+        </div>
+      </div>
+      <!-- Tamil -->
+      <div class="lang-block">
+        <div class="lang-header">
+          <span class="lang-flag">🇮🇳</span>
+          <span class="lang-name">Tamil</span>
+          <span class="lang-script">ta · Tamil</span>
+        </div>
+        <div class="audio-rows">
+          <div class="audio-row">
+            <span class="sample-label">Sample 1</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+          <div class="audio-row">
+            <span class="sample-label">Sample 2</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+        </div>
+      </div>
+      <!-- Telugu -->
+      <div class="lang-block">
+        <div class="lang-header">
+          <span class="lang-flag">🇮🇳</span>
+          <span class="lang-name">Telugu</span>
+          <span class="lang-script">te · Telugu</span>
+        </div>
+        <div class="audio-rows">
+          <div class="audio-row">
+            <span class="sample-label">Sample 1</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+          <div class="audio-row">
+            <span class="sample-label">Sample 2</span>
+            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
+          </div>
+        </div>
+      </div>
+    </div><!-- /vits-char -->
+
+    <div id="vits-dac" class="model-panel">
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+    </div><!-- /vits-dac -->
+
+    <div id="vits-cls" class="model-panel">
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+    </div><!-- /vits-cls -->
+  </div><!-- /vits -->
+
+
+  <!-- ═══════════════ MATCHA-TTS ═══════════════ -->
+  <div id="matcha" class="section-panel">
+    <div class="section-intro">
+      <h2>Matcha-TTS</h2>
+      <p>A fast TTS architecture using optimal-transport conditional flow matching.</p>
+    </div>
+
+    <div class="model-tabs">
+      <button class="model-tab active" onclick="switchModel('matcha', 'char', this)">Char</button>
+      <button class="model-tab" onclick="switchModel('matcha', 'dac', this)">DAC</button>
+      <button class="model-tab" onclick="switchModel('matcha', 'cls', this)">CLS</button>
+    </div>
+
+    <div id="matcha-char" class="model-panel active">
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+    </div><!-- /matcha-char -->
+
+    <div id="matcha-dac" class="model-panel">
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+    </div><!-- /matcha-dac -->
+
+    <div id="matcha-cls" class="model-panel">
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+      <div class="lang-block">
+        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
+        <div class="audio-rows">
+          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
+          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
+        </div>
+      </div>
+    </div><!-- /matcha-cls -->
+  </div><!-- /matcha -->
+
+</main>
+
+<footer>
+  Anonymous submission · All audio samples are synthesized speech for evaluation purposes only.
+</footer>
+
+<script>
+  function switchSection(id, btn) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function switchModel(section, model, btn) {
+    const panel = document.getElementById(section);
+    panel.querySelectorAll('.model-panel').forEach(p => p.classList.remove('active'));
+    panel.querySelectorAll('.model-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById(section + '-' + model).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
