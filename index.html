@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TTS Demo — Anonymous Submission</title>
+<title>TTS Demo</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -11,14 +11,16 @@
     --surface: #ffffff;
     --border: #e2ddd5;
     --accent: #2a5298;
-    --accent2: #1a3a6e;
     --text: #1a1814;
     --muted: #6b6660;
     --tag-bg: #eef2fa;
     --tag-text: #2a5298;
-    --play-bg: #2a5298;
-    --play-hover: #1a3a6e;
-    --section-border: #2a5298;
+    --male-bg: #eef4ff;
+    --male-border: #c5d5f5;
+    --female-bg: #fdf0f8;
+    --female-border: #e8c5dc;
+    --male-label: #2a5298;
+    --female-label: #8b3a6e;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,210 +32,179 @@
     min-height: 100vh;
   }
 
+  /* ── Header ── */
   header {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 2.5rem 2rem 2rem;
     text-align: center;
   }
-
   header h1 {
     font-family: 'DM Serif Display', serif;
     font-size: 2rem;
     font-weight: 400;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.01em;
+    margin-bottom: 0.4rem;
   }
-
-  header p {
-    font-size: 0.9rem;
-    color: var(--muted);
-    font-weight: 300;
-  }
-
+  header p { font-size: 0.875rem; color: var(--muted); font-weight: 300; }
   .notice {
     display: inline-block;
     margin-top: 1rem;
     background: var(--tag-bg);
     color: var(--tag-text);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-family: 'DM Mono', monospace;
-    padding: 0.35rem 0.9rem;
+    padding: 0.3rem 0.85rem;
     border-radius: 2px;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
   }
 
+  /* ── Nav ── */
   nav {
     display: flex;
     justify-content: center;
-    gap: 0;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 10;
   }
-
   nav button {
     font-family: 'DM Sans', sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
-    padding: 0.9rem 2rem;
+    padding: 0.9rem 2.2rem;
     border: none;
     background: transparent;
     color: var(--muted);
     cursor: pointer;
     border-bottom: 2.5px solid transparent;
     transition: color 0.2s, border-color 0.2s;
-    letter-spacing: 0.02em;
   }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  nav button:hover:not(.active) { color: var(--text); }
 
-  nav button.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  nav button:hover:not(.active) {
-    color: var(--text);
-  }
-
-  main {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
-  }
+  /* ── Main ── */
+  main { max-width: 1000px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
 
   .section-panel { display: none; }
   .section-panel.active { display: block; }
 
-  .section-intro {
-    margin-bottom: 2rem;
-  }
-
+  .section-intro { margin-bottom: 2rem; }
   .section-intro h2 {
     font-family: 'DM Serif Display', serif;
     font-size: 1.5rem;
     font-weight: 400;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
   }
+  .section-intro p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
 
-  .section-intro p {
-    font-size: 0.875rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* Model tabs */
-  .model-tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .model-tab {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    font-weight: 500;
-    padding: 0.45rem 1.1rem;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    cursor: pointer;
-    border-radius: 3px;
-    transition: all 0.15s;
-    letter-spacing: 0.04em;
-  }
-
-  .model-tab.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-
-  .model-tab:hover:not(.active) {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .model-panel { display: none; }
-  .model-panel.active { display: block; }
-
-  /* Language blocks */
+  /* ── Language block ── */
   .lang-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    overflow: hidden;
+    margin-bottom: 2.5rem;
   }
-
-  .lang-header {
+  .lang-title {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.9rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    background: #fafaf8;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent);
   }
-
-  .lang-flag {
+  .lang-title h3 {
+    font-family: 'DM Serif Display', serif;
     font-size: 1.2rem;
-    line-height: 1;
-  }
-
-  .lang-name {
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--text);
   }
-
-  .lang-script {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-left: auto;
-    font-family: 'DM Mono', monospace;
-  }
-
-  .audio-rows {
-    padding: 0.75rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .audio-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .sample-label {
+  .lang-title .script-tag {
     font-family: 'DM Mono', monospace;
     font-size: 0.72rem;
     color: var(--muted);
-    min-width: 58px;
     letter-spacing: 0.04em;
   }
 
-  audio {
+  /* ── Sample group (S1 or S2) ── */
+  .sample-group {
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  /* speaker header */
+  .speaker-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .speaker-header.male   { background: var(--male-bg);   border-left: 3px solid var(--male-label); }
+  .speaker-header.female { background: var(--female-bg); border-left: 3px solid var(--female-label); }
+
+  .speaker-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+  }
+  .male   .speaker-badge { background: var(--male-border);   color: var(--male-label); }
+  .female .speaker-badge { background: var(--female-border); color: var(--female-label); }
+
+  .transcript {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.5;
+    font-style: italic;
     flex: 1;
-    height: 32px;
+  }
+
+  /* model rows inside a sample group */
+  .model-rows {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .model-row {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #f0ede8;
+  }
+  .model-row:last-child { border-bottom: none; }
+
+  .model-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: var(--tag-bg);
+    padding: 0.18rem 0.45rem;
+    border-radius: 2px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  audio {
+    width: 100%;
+    height: 28px;
     border-radius: 3px;
     outline: none;
+    display: block;
   }
 
-  audio::-webkit-media-controls-panel {
-    background: var(--tag-bg);
-  }
-
-  /* Responsive */
+  /* ── Responsive ── */
   @media (max-width: 600px) {
     header h1 { font-size: 1.5rem; }
-    nav button { padding: 0.8rem 1rem; font-size: 0.8rem; }
-    .audio-row { flex-wrap: wrap; }
-    audio { min-width: 200px; }
+    nav button { padding: 0.8rem 1.1rem; font-size: 0.8rem; }
+    .speaker-header { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+    .model-row { grid-template-columns: 48px 1fr; }
   }
 
   footer {
@@ -250,8 +221,7 @@
 
 <header>
   <h1>Text-to-Speech — Demo Samples</h1>
-  <p>Audio samples for anonymous review. Two samples per language per model.</p>
-  <span class="notice">ANONYMOUS SUBMISSION</span>
+  <p>Audio samples · 4 speakers · models compared sample-by-sample</p>
 </header>
 
 <nav>
@@ -261,322 +231,372 @@
 
 <main>
 
-  <!-- ═══════════════ VITS ═══════════════ -->
-  <div id="vits" class="section-panel active">
-    <div class="section-intro">
-      <h2>VITS</h2>
-      <p>Variational Inference with adversarial learning for end-to-end Text-to-Speech.</p>
+<!-- ════════════════════════════════════════
+     VITS
+════════════════════════════════════════ -->
+<div id="vits" class="section-panel active">
+  <div class="section-intro">
+    <h2>VITS</h2>
+    <p>Variational Inference with adversarial learning for end-to-end Text-to-Speech.</p>
+  </div>
+
+  <!-- ── Hindi ── -->
+  <div class="lang-block">
+    <div class="lang-title">
+      <h3>Hindi</h3>
+      <span class="script-tag">hi · Devanagari</span>
     </div>
 
-    <div class="model-tabs">
-      <button class="model-tab active" onclick="switchModel('vits', 'char', this)">Char</button>
-      <button class="model-tab" onclick="switchModel('vits', 'dac', this)">DAC</button>
-      <button class="model-tab" onclick="switchModel('vits', 'cls', this)">CLS</button>
+    <!-- Male 1 -->
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 1</span>
+        <span class="transcript">इसके अलावा यहाँ चूना का पत्थर भी प्रचुर मात्रा में पाया जाता है</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/hi/844424933489401-38-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/hi/844424933489401-38-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/hi/844424933489401-38-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/hi/844424933489401-38-m.wav"></audio></div>
+      </div>
     </div>
 
-    <div id="vits-char" class="model-panel active">
-      <!-- Hindi -->
-      <div class="lang-block">
-        <div class="lang-header">
-          <span class="lang-flag">🇮🇳</span>
-          <span class="lang-name">Hindi</span>
-          <span class="lang-script">hi · Devanagari</span>
-        </div>
-        <div class="audio-rows">
-          <div class="audio-row">
-            <span class="sample-label">Sample 1</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-          <div class="audio-row">
-            <span class="sample-label">Sample 2</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-        </div>
+    <!-- Male 2 -->
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 2</span>
+        <span class="transcript">महंगाई से प्रदेश की जनता परेशान है तो महिलाओं और गरीबों पर अत्याचार बढ़ा है</span>
       </div>
-      <!-- Punjabi -->
-      <div class="lang-block">
-        <div class="lang-header">
-          <span class="lang-flag">🇮🇳</span>
-          <span class="lang-name">Punjabi</span>
-          <span class="lang-script">pa · Gurmukhi</span>
-        </div>
-        <div class="audio-rows">
-          <div class="audio-row">
-            <span class="sample-label">Sample 1</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-          <div class="audio-row">
-            <span class="sample-label">Sample 2</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-        </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/hi/844424931243784-164-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/hi/844424931243784-164-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/hi/844424931243784-164-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/hi/844424931243784-164-f.wav"></audio></div>
       </div>
-      <!-- Gujarati -->
-      <div class="lang-block">
-        <div class="lang-header">
-          <span class="lang-flag">🇮🇳</span>
-          <span class="lang-name">Gujarati</span>
-          <span class="lang-script">gu · Gujarati</span>
-        </div>
-        <div class="audio-rows">
-          <div class="audio-row">
-            <span class="sample-label">Sample 1</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-          <div class="audio-row">
-            <span class="sample-label">Sample 2</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-        </div>
-      </div>
-      <!-- Tamil -->
-      <div class="lang-block">
-        <div class="lang-header">
-          <span class="lang-flag">🇮🇳</span>
-          <span class="lang-name">Tamil</span>
-          <span class="lang-script">ta · Tamil</span>
-        </div>
-        <div class="audio-rows">
-          <div class="audio-row">
-            <span class="sample-label">Sample 1</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-          <div class="audio-row">
-            <span class="sample-label">Sample 2</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-        </div>
-      </div>
-      <!-- Telugu -->
-      <div class="lang-block">
-        <div class="lang-header">
-          <span class="lang-flag">🇮🇳</span>
-          <span class="lang-name">Telugu</span>
-          <span class="lang-script">te · Telugu</span>
-        </div>
-        <div class="audio-rows">
-          <div class="audio-row">
-            <span class="sample-label">Sample 1</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-          <div class="audio-row">
-            <span class="sample-label">Sample 2</span>
-            <audio controls src="audio/tmp.wav">Your browser does not support audio.</audio>
-          </div>
-        </div>
-      </div>
-    </div><!-- /vits-char -->
-
-    <div id="vits-dac" class="model-panel">
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-    </div><!-- /vits-dac -->
-
-    <div id="vits-cls" class="model-panel">
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-    </div><!-- /vits-cls -->
-  </div><!-- /vits -->
-
-
-  <!-- ═══════════════ MATCHA-TTS ═══════════════ -->
-  <div id="matcha" class="section-panel">
-    <div class="section-intro">
-      <h2>Matcha-TTS</h2>
-      <p>A fast TTS architecture using optimal-transport conditional flow matching.</p>
     </div>
 
-    <div class="model-tabs">
-      <button class="model-tab active" onclick="switchModel('matcha', 'char', this)">Char</button>
-      <button class="model-tab" onclick="switchModel('matcha', 'dac', this)">DAC</button>
-      <button class="model-tab" onclick="switchModel('matcha', 'cls', this)">CLS</button>
+    <!-- Female 1 -->
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 3</span>
+        <span class="transcript">परेशान सारा को फिर से करण जौहर ने मदद की और सिंबा दी</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/hi/844424930561612-229-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/hi/844424930561612-229-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/hi/844424930561612-229-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/hi/844424930561612-229-f.wav"></audio></div>
+      </div>
     </div>
 
-    <div id="matcha-char" class="model-panel active">
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+    <!-- Female 2 -->
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 4</span>
+        <span class="transcript">बता दें कि बाकी देशों में भी इसका इस्तेमाल किया जा रहा है</span>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/hi/844424930599410-939-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/hi/844424930599410-939-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/hi/844424930599410-939-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/hi/844424930599410-939-f.wav"></audio></div>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
-      </div>
-    </div><!-- /matcha-char -->
+    </div>
+  </div><!-- /Hindi -->
 
-    <div id="matcha-dac" class="model-panel">
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+  <!-- ── Punjabi ── -->
+  <div class="lang-block">
+    <div class="lang-title">
+      <h3>Punjabi</h3>
+      <span class="script-tag">pa · Gurmukhi</span>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 1</span>
+        <span class="transcript">ਦੋ ਹਾਲ ਵਿੱਚ ਇੱਕ ਬਹੁਤ ਹੀ ਡਰਾਉਣਾ ਦਹਿਸ਼ਤ ਫਿਲਮ ਸਾਬਤ ਕੀਤਾ ਜਾਵੇਗਾ</span>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/pa/844424930560981-973-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/pa/844424930560981-973-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/pa/844424930560981-973-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/pa/844424930560981-973-f.wav"></audio></div>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 2</span>
+        <span class="transcript">ਇਕ ਹੋਰ ਸਵਾਲ ਇਹ ਹੈ ਕਿ ਇਕ ਅਜਿਹੇ ਆਦਮੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇੱਛਾ</span>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/pa/844424930614123-396-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/pa/844424930614123-396-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/pa/844424930614123-396-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/pa/844424930614123-396-f.wav"></audio></div>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 3</span>
+        <span class="transcript">ਸਰੂਰ ਇੱਕ ਖੁੱਲ੍ਹਾ ਜ਼ਿਹਨ ਰੱਖਣ ਵਾਲਾ ਆਲੋਚਕ ਹੈ</span>
       </div>
-    </div><!-- /matcha-dac -->
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/pa/844424933623222-700-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/pa/844424933623222-700-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/pa/844424933623222-700-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/pa/844424933623222-700-m.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 4</span>
+        <span class="transcript">ਅਕਬਰ ਅਤੇ ਸਲੀਮ ਦੀਆਂ ਫੌਜਾਂ ਵਿੱਚ ਜੰਗ ਹੁੰਦੀ ਹੈ ਅਤੇ ਸਲੀਮ ਫੜਿਆ ਜਾਂਦਾ ਹੈ</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/pa/844424933625185-1019-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/pa/844424933625185-1019-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/pa/844424933625185-1019-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/pa/844424933625185-1019-m.wav"></audio></div>
+      </div>
+    </div>
+  </div><!-- /Punjabi -->
 
-    <div id="matcha-cls" class="model-panel">
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Hindi</span><span class="lang-script">hi · Devanagari</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+  <!-- ── Gujarati ── -->
+  <div class="lang-block">
+    <div class="lang-title">
+      <h3>Gujarati</h3>
+      <span class="script-tag">gu · Gujarati</span>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 1</span>
+        <span class="transcript">મિસ વર્લ્ડના ફાઈનલ રાઉન્ડમાં તેણે આપેલા સવાલ જવાબની પણ દેશભરમાં ચર્ચા થઈ રહી છે</span>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Punjabi</span><span class="lang-script">pa · Gurmukhi</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/gu/844424930298369-1139-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/gu/844424930298369-1139-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/gu/844424930298369-1139-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/gu/844424930298369-1139-m.wav"></audio></div>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Gujarati</span><span class="lang-script">gu · Gujarati</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 2</span>
+        <span class="transcript">પ્રતિકાર વ્યવસ્થા થોડા સમય માટે શાંત પડી જાય છે તેવું કહેવાય છે</span>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Tamil</span><span class="lang-script">ta · Tamil</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/gu/844424933362320-843-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/gu/844424933362320-843-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/gu/844424933362320-843-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/gu/844424933362320-843-m.wav"></audio></div>
       </div>
-      <div class="lang-block">
-        <div class="lang-header"><span class="lang-flag">🇮🇳</span><span class="lang-name">Telugu</span><span class="lang-script">te · Telugu</span></div>
-        <div class="audio-rows">
-          <div class="audio-row"><span class="sample-label">Sample 1</span><audio controls src="audio/tmp.wav"></audio></div>
-          <div class="audio-row"><span class="sample-label">Sample 2</span><audio controls src="audio/tmp.wav"></audio></div>
-        </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 3</span>
+        <span class="transcript">બે દિવસથી અમદાવાદનું તાપમાન પણ સતત ગગડી રહ્યું છે</span>
       </div>
-    </div><!-- /matcha-cls -->
-  </div><!-- /matcha -->
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/gu/844424932296189-382-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/gu/844424932296189-382-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/gu/844424932296189-382-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/gu/844424932296189-382-f.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 4</span>
+        <span class="transcript">લગભગ એક દાયકા સુધી આ મામલો સંકુચિતતા વચ્ચે અટવાતો રહ્યો હતો</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/gu/844424932947503-891-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/gu/844424932947503-891-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/gu/844424932947503-891-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/gu/844424932947503-891-f.wav"></audio></div>
+      </div>
+    </div>
+  </div><!-- /Gujarati -->
+
+  <!-- ── Tamil ── -->
+  <div class="lang-block">
+    <div class="lang-title">
+      <h3>Tamil</h3>
+      <span class="script-tag">ta · Tamil</span>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 1</span>
+        <span class="transcript">பட்டா மாறுதல் உட்பட இணையதளம் வழியிலான அரசு பணிகள் மக்களுக்கு பயனளிக்கிறது</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/ta/844424930305845-870-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/ta/844424930305845-870-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/ta/844424930305845-870-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/ta/844424930305845-870-f.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 2</span>
+        <span class="transcript">மேச்சேரி பேரூராட்சி பகுதியில் மழைநீர் வடிகால் தூய்மை பணியை கலெக்டர் ஆய்வு</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/ta/844424930334690-21-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/ta/844424930334690-21-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/ta/844424930334690-21-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/ta/844424930334690-21-m.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 3</span>
+        <span class="transcript">ரஷ்யாவில் சர்க்கஸ் ஒன்றில் வேடிக்கை பார்த்துக் கொண்டிருந்த சிறுமியின் முகத்தில் சிங்கம் பிராண்டிய சம்பவம்</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/ta/844424930355833-797-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/ta/844424930355833-797-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/ta/844424930355833-797-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/ta/844424930355833-797-m.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 4</span>
+        <span class="transcript">அரசியல் தீர்வு தொடர்பில் மக்கள் ஆலோசனையினை பெறுவதற்கான காலம் இரண்டு வாரங்களுக்கு நீடிக்கப்பட்டுள்ளதாக தமிழ் தேசியக் கூட்டமைப்பின் நாடாளுமன்ற</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/ta/844424930424429-781-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/ta/844424930424429-781-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/ta/844424930424429-781-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/ta/844424930424429-781-f.wav"></audio></div>
+      </div>
+    </div>
+  </div><!-- /Tamil -->
+
+  <!-- ── Telugu ── -->
+  <div class="lang-block">
+    <div class="lang-title">
+      <h3>Telugu</h3>
+      <span class="script-tag">te · Telugu</span>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 1</span>
+        <span class="transcript">తెలంగాణ రాష్ట్ర రోడ్డు రవాణా సంస్థ ఆధ్వర్యంలో బేగంబజార్ నుండి నగరంలోని అన్ని ప్రాంతాలకు బస్సులు నడుపబడుతున్నాయి</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/te/844424933525358-958-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/te/844424933525358-958-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/te/844424933525358-958-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/te/844424933525358-958-m.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 2</span>
+        <span class="transcript">చాలా మంది దక్షిణాసియా వాసులు పని కోసం అక్కడికి వలస వచ్చి ఉపాధి పొందారు</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/te/844424933346826-638-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/te/844424933346826-638-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/te/844424933346826-638-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/te/844424933346826-638-m.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 3</span>
+        <span class="transcript">ఆరేడు మంది స్టార్స్ కలిసి సినిమా చేసేటప్పుడు ఆ ఎన్విరాన్మెంట్ చాలా డిఫరెంట్గా ఉంటుంది</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/te/844424932694646-134-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/te/844424932694646-134-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/te/844424932694646-134-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/te/844424932694646-134-f.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 4</span>
+        <span class="transcript">ఆటగాళ్ల డిమాండు ప్రకారం వారికి నచ్చిన విధంగా బ్యాట్లను తయారు చేసేవారు</span>
+      </div>
+      <div class="model-rows">
+        <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/vits/ground_truth/te/844424930798954-204-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/vits/char/te/844424930798954-204-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/vits/rvq/te/844424930798954-204-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">CLS</span><audio controls src="audio/vits/cls/te/844424930798954-204-f.wav"></audio></div>
+      </div>
+    </div>
+  </div><!-- /Telugu -->
+
+</div><!-- /vits -->
+
+
+<!-- ════════════════════════════════════════
+     MATCHA-TTS
+════════════════════════════════════════ -->
+<div id="matcha" class="section-panel">
+  <div class="section-intro">
+    <h2>Matcha-TTS</h2>
+    <p>A fast TTS architecture using optimal-transport conditional flow matching.</p>
+  </div>
+
+  <!-- ── Hindi ── -->
+  <div class="lang-block">
+    <div class="lang-title">
+      <h3>Hindi</h3>
+      <span class="script-tag">hi · Devanagari</span>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 1</span>
+        <span class="transcript">इसमें प्रकाश तरंगों के स्पेक्ट्रम का अध्ययन किया जाता है</span>
+      </div>
+      <div class="model-rows">
+        <!-- <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/matcha/ground_truth/844424932430447-384-f.wav"></audio></div> -->
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/matcha/char/844424932430447-384-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/matcha/rvq/844424932430447-384-f.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 2</span>
+        <span class="transcript">तृप्त राजेंद्र बाजवाः पंजाब में कांग्रेस का जटसिख चेहरा हैं</span>
+      </div>
+      <div class="model-rows">
+        <!-- <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/matcha/ground_truth/844424931029962-326-f.wav"></audio></div> -->
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/matcha/char/844424931029962-326-f.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/matcha/rvq/844424931029962-326-f.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 3</span>
+        <span class="transcript">Transcript of the Hindi Female 1 sample sentence goes here.</span>
+      </div>
+      <div class="model-rows">
+        <!-- <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/matcha/ground_truth/844424933457453-934-m.wav"></audio></div> -->
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/matcha/char/844424933457453-934-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/matcha/rvq/844424933457453-934-m.wav"></audio></div>
+      </div>
+    </div>
+    <div class="sample-group">
+      <div class="speaker-header ">
+        <span class="speaker-badge">Audio 4</span>
+        <span class="transcript">Transcript of the Hindi Female 2 sample sentence goes here.</span>
+      </div>
+      <div class="model-rows">
+        <!-- <div class="model-row"><span class="model-tag">GT</span><audio controls src="audio/matcha/ground_truth/844424933491097-934-m.wav"></audio></div> -->
+        <div class="model-row"><span class="model-tag">CHAR</span><audio controls src="audio/matcha/char/844424933491097-934-m.wav"></audio></div>
+        <div class="model-row"><span class="model-tag">RVQ</span><audio controls src="audio/matcha/rvq/844424933491097-934-m.wav"></audio></div>
+      </div>
+    </div>
+  </div><!-- /Hindi -->
+</div><!-- /matcha -->
 
 </main>
 
 <footer>
-  Anonymous submission · All audio samples are synthesized speech for evaluation purposes only.
+  All audio samples are synthesized speech for evaluation purposes only.
 </footer>
 
 <script>
@@ -584,14 +604,6 @@
     document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
-  }
-
-  function switchModel(section, model, btn) {
-    const panel = document.getElementById(section);
-    panel.querySelectorAll('.model-panel').forEach(p => p.classList.remove('active'));
-    panel.querySelectorAll('.model-tab').forEach(b => b.classList.remove('active'));
-    document.getElementById(section + '-' + model).classList.add('active');
     btn.classList.add('active');
   }
 </script>
